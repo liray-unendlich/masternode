@@ -24,7 +24,7 @@ do
     shift
     ;;
     -*)
-    echo "エラー: 不明なオプションを入力しています: $1" > $2
+    echo "Error: Invalid option:  $1" > $2
     exit 1
     ;;
     *)
@@ -51,17 +51,18 @@ function create_mnconf() {
   cat tmp_masternode.conf
 }
 echo " "
-echo "*********** Zenzo マスターノード設定スクリプトへようこそ ***********"
-echo 'Ubuntu16.04に必要なパッケージをすべてインストールします。'
-echo 'その後Zenzoのウォレットをコンパイルし、設定、実行します。'
-echo '*****************************************************************'
-echo '*** パッケージのインストール ***'
+echo "*********** Welcome to the ZENZO (ZNZ) Masternode Setup Script ***********"
+echo 'This script will install all required updates & package for Ubuntu 16.04 !'
+echo 'This script will install Zenzo masternode.'
+echo 'You can run this script on VPS only.'
+echo '****************************************************************************'
+echo '*** Installing package ***'
 apt-get update -qqy
 apt-get upgrade -qqy
 apt-get dist-upgrade -qqy
 apt-get install -qqy nano htop git wget
-echo '*** ステップ 2/4 ***'
-echo '*** ファイアウォールの設定・スタートを行います。 ***'
+echo '*** Step 2/4 ***'
+echo '*** Configuring firewall ***'
 apt-get install -qqy ufw
 ufw allow ssh/tcp >> mn.log
 ufw limit ssh/tcp >> mn.log
@@ -71,17 +72,16 @@ ufw --force enable >> mn.log
 ufw status >> mn.log
 zenzo-cli stop &>> mn.log
 ./zenzo-cli stop &>> mn.log
-echo '*** ステップ 3/4 ***'
+echo '*** Step 3/4 ***'
 if [ -e /usr/local/bin/zenzod -o -e zenzod ]; then
-  echo '***ウォレットのバックアップを取ります。必要な場合はホーム直下のZENZO_日付 ***'
-  echo '***という名前のディレクトリにアクセスしてください。***'
+  echo '***Backup your existing zenzod. If you want to restore, please check ZENZO_DATE ***'
   mkdir ZENZO_`date '+%Y%m%d'` >> mn.log
   mv /usr/local/bin/zenzod /usr/local/bin/zenzo-cli /usr/local/bin/zenzo-tx ~/ZENZO_`date '+%Y%m%d'` &>> mn.log
   mv ~/zenzod ~/zenzo-cli ~/zenzo-tx ~/ZENZO_`date '+%Y%m%d'` &>> mn.log
 fi
 
-echo '*** ステップ 4/4 ***'
-echo '***zenzoウォレットのインストールを開始します。***'
+echo '*** Step 4/4 ***'
+echo '***Installing zenzo wallet daemon***'
 curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=13QrHlxAnPcsVWeHQHmQHzW43cC49PrN0" > /dev/null
 CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"
 curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=13QrHlxAnPcsVWeHQHmQHzW43cC49PrN0" -o znz.zip
@@ -99,15 +99,15 @@ mv zenzo* /usr/local/bin/
 cd
 rm -r znz.zip znz
 if [ $update -eq 1 ]; then
-  echo "アップデートを行います。"
+  echo "Updating"
   zenzod -daemon
   zenzo-cli getinfo
-  echo "アップデートは完了しました。"
-  echo "バージョンデータが新しくなっているかご確認ください。"
-  echo "ご確認後、マスターノードをzenzo-qtから再起動させるのをお忘れなきようお願いいたします。"
-  echo "***終了***"
+  echo "Finish Updating"
+  echo "Check version data."
+  echo "After checking, please restart Zenzo masternode from zenzo-qt"
+  echo "***End***"
 elif [ $install -eq 1 ]; then
-  echo '*** インストールとしてウォレットの起動・初期設定を行います。 ***'
+  echo '*** Install and configuring masternode settings ***'
   mkdir .zenzo
   rpcusr=$(more /dev/urandom  | tr -d -c '[:alnum:]' | fold -w 20 | head -1)
   rpcpass=$(more /dev/urandom  | tr -d -c '[:alnum:]' | fold -w 20 | head -1)
@@ -115,27 +115,27 @@ elif [ $install -eq 1 ]; then
   if [ $generate -eq 1 ]; then
     generate_privkey
   else
-    echo "マスターノードプライベートキー(ステップ2の結果)を入力もしくはペーストしてください。"
+    echo "Enter or paste masternode private key"
     read mngenkey
     while [ ${#mngenkey} -ne 51 ]
     do
-      echo "入力されたプライベートキーは正しくありません。もう一度確認してください。"
+      echo "Invalid masternode private key. please reinput."
       read mngenkey
     done
   fi
   echo -e "rpcuser=$rpcusr\nrpcpassword=$rpcpass\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nmasternode=1\nlogtimestamps=1\nmaxconnections=256\nexternalip=$ipaddress\nbind=$ipaddress\nmasternodeaddr=$ipaddress:26210\nmasternodeprivkey=$mngenkey\nenablezeromint=0\naddnode=67.23.158.129\naddnode=207.246.95.9\naddnode=140.82.61.65\naddnode=196.52.39.21\naddnode=149.28.98.180\naddnode=149.28.236.13\n" > ~/.zenzo/zenzo.conf
-  echo '*** 設定が完了しましたので、ウォレットを起動して同期を開始します。 ***'
+  echo '*** Start syncing ***'
   zenzod -daemon &>> mn.log
-  echo '10秒後に getinfo コマンドの出力結果を表示します。'
+  echo 'After 10sec, I will show you the outputs of getinfo'
   sleep 10
   zenzo-cli getinfo
-  echo '同期が完了すれば、zenzo-qtのウォレットからマスターノードを実行できます！'
-  echo '最後に、masternode.conf の例をお見せします。こちらをご利用ください。'
+  echo 'After fully syncing, you can start Zenzo masternode.'
+  echo 'There is example line for masternode.conf. Please copy this line and paste to your masternode.conf'
   echo " "
   create_mnconf
   echo " "
-  echo 'コマンド cat tmp_masternode.conf を入力することで再度表示可能です。'
+  echo 'You can check the line by entering  **cat tmp_masternode.conf** '
 else
-  echo "入力が間違っているようです。アップデートの場合: '-u', 新規インストールの場合: '-i'をオプションとしてください。"
-　echo "終了します。"
+  echo "Invalid command, or argument. If you want to update, use '-u', to install, use '-i'."
+　echo "**END**"
 fi
