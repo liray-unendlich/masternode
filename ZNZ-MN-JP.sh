@@ -47,7 +47,7 @@ function generate_privkey() {
 
 # Make masternode.conf for ppl
 function create_mnconf() {
-  echo ZNZ-MN01 $ipaddress:11771 $mngenkey TRANSACTION_ID TRANSACTION_INDEX >> tmp_masternode.conf
+  echo ZNZ-MN01 $ipaddress:26210 $mngenkey TRANSACTION_ID TRANSACTION_INDEX >> tmp_masternode.conf
   cat tmp_masternode.conf
 }
 echo " "
@@ -65,7 +65,7 @@ echo '*** ファイアウォールの設定・スタートを行います。 ***
 apt-get install -qqy ufw
 ufw allow ssh/tcp >> mn.log
 ufw limit ssh/tcp >> mn.log
-ufw allow 11771/tcp >> mn.log
+ufw allow 26210/tcp >> mn.log
 ufw logging on >> mn.log
 ufw --force enable >> mn.log
 ufw status >> mn.log
