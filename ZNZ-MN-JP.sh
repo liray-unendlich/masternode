@@ -91,6 +91,7 @@ curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE
 # cd zenzo-${version}/bin
 # mv zenzo* /usr/local/bin/
 unzip znz.zip
+cd
 cd znz/Linux/
 mv zenzo* /usr/local/bin/
 # rm zenzo-${version}-x86_64-linux-gnu.tar.gz
