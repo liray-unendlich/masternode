@@ -59,7 +59,7 @@ echo '*** パッケージのインストール ***'
 apt-get update -qqy
 apt-get upgrade -qqy
 apt-get dist-upgrade -qqy
-apt-get install -qqy nano htop git wget
+apt-get install -qqy nano htop git wget unzip
 echo '*** ステップ 2/4 ***'
 echo '*** ファイアウォールの設定・スタートを行います。 ***'
 apt-get install -qqy ufw
