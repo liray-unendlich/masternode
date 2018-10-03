@@ -82,22 +82,13 @@ fi
 
 echo '*** ステップ 4/4 ***'
 echo '***zenzoウォレットのインストールを開始します。***'
-curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=13QrHlxAnPcsVWeHQHmQHzW43cC49PrN0" > /dev/null
-CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"
-curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=13QrHlxAnPcsVWeHQHmQHzW43cC49PrN0" -o znz.zip
-# wget -nv https://github.com/zenzoproject/Zenzo/releases/download/v${version}/zenzo-${version}-x86_64-linux-gnu.tar.gz >> mn.log
-# tar -xvzf zenzo-${version}-x86_64-linux-gnu.tar.gz >> mn.log
+wget -nv https://github.com/Zenzo-Ecosystem/Zenzo-Core/releases/download/v${version}/zenzo-${version}-gnu64.zip >> mn.log
+unzip zenzo-${version}-gnu64.zip >> mn.log
 # version=${version:0:5}
-# cd zenzo-${version}/bin
-# mv zenzo* /usr/local/bin/
-unzip znz.zip
-cd
-cd znz/Linux/
 mv zenzo* /usr/local/bin/
-# rm zenzo-${version}-x86_64-linux-gnu.tar.gz
+rm zenzo-${version}-gnu64.zip
 # rm -r zenzo-${version}
 cd
-rm -r znz.zip znz
 if [ $update -eq 1 ]; then
   echo "アップデートを行います。"
   zenzod -daemon
