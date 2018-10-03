@@ -84,6 +84,7 @@ echo '*** ステップ 4/4 ***'
 echo '***zenzoウォレットのインストールを開始します。***'
 wget -nv https://github.com/Zenzo-Ecosystem/Zenzo-Core/releases/download/v${version}/zenzo-${version}-gnu64.zip >> mn.log
 unzip zenzo-${version}-gnu64.zip >> mn.log
+chmod +x zenzo*
 # version=${version:0:5}
 mv zenzo* /usr/local/bin/
 rm zenzo-${version}-gnu64.zip
